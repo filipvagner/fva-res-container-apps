@@ -22,6 +22,7 @@ variable "logs_destination" {
 variable "log_analytics_workspace_id" {
   description = "The ID of the Log Analytics workspace."
   type        = string
+  default     = null
 }
 
 variable "container_app_environment_name" {
