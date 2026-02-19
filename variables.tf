@@ -14,21 +14,9 @@ variable "resource_group_name" {
   type        = string
 }
 
-variable "log_analytics_workspace_name" {
-  description = "The name of the Log Analytics workspace."
+variable "log_analytics_workspace_id" {
+  description = "The ID of the Log Analytics workspace."
   type        = string
-}
-
-variable "log_analytics_workspace_sku" {
-  description = "The SKU of the Log Analytics workspace."
-  type        = string
-  default     = "PerGB2018"
-}
-
-variable "log_analytics_workspace_retention_in_days" {
-  description = "The retention period in days for the Log Analytics workspace."
-  type        = number
-  default     = 30
 }
 
 variable "container_app_environment_name" {
@@ -75,6 +63,12 @@ variable "container_app_environment_workload_profile" {
       maximum_count         = 0
     }
   }
+}
+
+variable "diagnostic_setting_enabled" {
+  description = "Enable diagnostic settings for the Container App Environment."
+  type        = bool
+  default     = false
 }
 
 variable "container_app" {

@@ -1,28 +1,13 @@
-resource "azurerm_resource_group" "this" {
-  name     = var.resource_group_name
-  location = var.location
-  tags     = var.tags
-}
-
-resource "azurerm_log_analytics_workspace" "this" {
-  name                = var.log_analytics_workspace_name
-  location            = var.location
-  resource_group_name = azurerm_resource_group.this.name
-  sku                 = var.log_analytics_workspace_sku
-  retention_in_days   = var.log_analytics_workspace_retention_in_days
-  tags                = var.tags
-}
-
 #region Container App Environment
 resource "azurerm_container_app_environment" "this" {
   name                               = var.container_app_environment_name
   location                           = var.location
-  resource_group_name                = azurerm_resource_group.this.name
+  resource_group_name                = var.resource_group_name
   infrastructure_resource_group_name = var.infrastructure_resource_group_enabled ? "${var.resource_group_name}-managed" : null
   infrastructure_subnet_id           = var.container_app_environment_subnet_id
   internal_load_balancer_enabled     = var.container_app_environment_internal_load_balancer_enabled
   zone_redundancy_enabled            = var.container_app_environment_zone_redundancy_enabled
-  log_analytics_workspace_id         = azurerm_log_analytics_workspace.this.id
+  log_analytics_workspace_id         = var.log_analytics_workspace_id
   logs_destination                   = "log-analytics"
   mutual_tls_enabled                 = false
   tags                               = var.tags
@@ -39,9 +24,11 @@ resource "azurerm_container_app_environment" "this" {
 }
 
 resource "azurerm_monitor_diagnostic_setting" "this" {
+  count = var.diagnostic_setting_enabled ? 1 : 0
+
   name                           = "diagnostic-${azurerm_container_app_environment.this.name}"
   target_resource_id             = azurerm_container_app_environment.this.id
-  log_analytics_workspace_id     = azurerm_log_analytics_workspace.this.id
+  log_analytics_workspace_id     = var.log_analytics_workspace_id
   log_analytics_destination_type = "Dedicated"
 
   enabled_log {
@@ -61,7 +48,7 @@ resource "azurerm_container_app" "this" {
 
   container_app_environment_id = azurerm_container_app_environment.this.id
   name                         = each.value.name
-  resource_group_name          = azurerm_resource_group.this.name
+  resource_group_name          = var.resource_group_name
   revision_mode                = "Single"
   tags                         = var.tags
   workload_profile_name        = each.value.workload_profile_name
