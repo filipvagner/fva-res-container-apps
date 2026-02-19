@@ -14,6 +14,11 @@ variable "resource_group_name" {
   type        = string
 }
 
+variable "logs_destination" {
+  description = "Can be 'azure-monitor' or 'log-analytics'. If 'log-analytics' is specified, log_analytics_workspace_id must be provided."
+  type        = string
+  default     = null
+}
 variable "log_analytics_workspace_id" {
   description = "The ID of the Log Analytics workspace."
   type        = string
