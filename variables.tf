@@ -159,8 +159,7 @@ variable "container_app_job" {
         }), null)
       }), null)
     }), null)
-    template = object({
-      container = map(object({
+    container = map(object({
       name    = string
       cpu     = number
       memory  = string
@@ -173,6 +172,5 @@ variable "container_app_job" {
         secret_name = optional(string)
       })), {})
       }))
-    })
   }))
 }
