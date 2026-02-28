@@ -122,9 +122,9 @@ variable "container_app" {
 variable "container_app_job" {
   description = "List of container app jobs configurations."
   type = map(object({
-    name = string
+    name                       = string
     replica_timeout_in_seconds = optional(number, 600)
-    replica_retry_limit = optional(number, 0)
+    replica_retry_limit        = optional(number, 0)
     registry = optional(object({
       identity             = optional(string)
       username             = optional(string)
@@ -132,7 +132,7 @@ variable "container_app_job" {
       server               = string
     }), null)
     identity = optional(object({
-      type = string
+      type         = string
       identity_ids = optional(list(string))
     }), null)
     secret = optional(map(object({
@@ -145,18 +145,18 @@ variable "container_app_job" {
       parallelism              = optional(number, 1)
       replica_completion_count = optional(number, 1)
       scale = optional(object({
-      min_executions              = optional(number, 0)
-      max_executions              = optional(number, 10)
-      polling_interval_in_seconds = optional(number, 30)
-      rules = optional(map(object({
-        name             = string
-        custom_rule_type = string
-        metadata         = map(string)
-        authentication = optional(map(object({
-        secret_name       = string
-        trigger_parameter = string
+        min_executions              = optional(number, 0)
+        max_executions              = optional(number, 10)
+        polling_interval_in_seconds = optional(number, 30)
+        rules = optional(map(object({
+          name             = string
+          custom_rule_type = string
+          metadata         = map(string)
+          authentication = optional(map(object({
+            secret_name       = string
+            trigger_parameter = string
+          })), {})
         })), {})
-      })), {})
       }), {})
     }), null)
     template = object({

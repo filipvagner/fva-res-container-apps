@@ -148,7 +148,7 @@ resource "azurerm_container_app_job" "this" {
       value               = try(secret.value.value, null)
     }
   }
-  
+
   dynamic "event_trigger_config" {
     for_each = try(each.value.event_trigger_config, null) != null ? [each.value.event_trigger_config] : []
     content {
