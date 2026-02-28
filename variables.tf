@@ -141,24 +141,24 @@ variable "container_app_job" {
       key_vault_secret_id = optional(string)
       value               = optional(string)
     })), {})
-    event_trigger_config = optional(object({
+    event_trigger_config = object({
       parallelism              = optional(number, 1)
       replica_completion_count = optional(number, 1)
       scale = optional(object({
-        min_executions              = optional(number, 0)
-        max_executions              = optional(number, 10)
-        polling_interval_in_seconds = optional(number, 30)
-        rules = optional(object({
-          name             = string
-          custom_rule_type = string
-          metadata         = map(string)
-          authentication = optional(object({
-            secret_name       = string
-            trigger_parameter = string
-          }), null)
+      min_executions              = optional(number, 0)
+      max_executions              = optional(number, 10)
+      polling_interval_in_seconds = optional(number, 30)
+      rules = optional(object({
+        name             = string
+        custom_rule_type = string
+        metadata         = map(string)
+        authentication = optional(object({
+        secret_name       = string
+        trigger_parameter = string
         }), null)
       }), null)
-    }), null)
+      }), null)
+    })
     container = map(object({
       name    = string
       cpu     = number

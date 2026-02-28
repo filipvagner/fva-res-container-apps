@@ -149,32 +149,29 @@ resource "azurerm_container_app_job" "this" {
     }
   }
 
-  dynamic "event_trigger_config" {
-    for_each = try(each.value.event_trigger_config, null) != null ? [each.value.event_trigger_config] : []
-    content {
-      parallelism              = try(event_trigger_config.value.parallelism, 1)
-      replica_completion_count = try(event_trigger_config.value.replica_completion_count, 1)
+  event_trigger_config {
+    parallelism              = try(each.value.event_trigger_config.parallelism, 1)
+    replica_completion_count = try(each.value.event_trigger_config.replica_completion_count, 1)
 
-      dynamic "scale" {
-        for_each = try(event_trigger_config.value.scale, null) != null ? [event_trigger_config.value.scale] : []
-        content {
-          min_executions              = try(scale.value.min_executions, 0)
-          max_executions              = try(scale.value.max_executions, 10)
-          polling_interval_in_seconds = try(scale.value.polling_interval_in_seconds, 30)
+    dynamic "scale" {
+      for_each = try(each.value.event_trigger_config.scale, null) != null ? [each.value.event_trigger_config.scale] : []
+      content {
+        min_executions              = try(scale.value.min_executions, 0)
+        max_executions              = try(scale.value.max_executions, 10)
+        polling_interval_in_seconds = try(scale.value.polling_interval_in_seconds, 30)
 
-          dynamic "rules" {
-            for_each = try(scale.value.rules, [])
-            content {
-              name             = rules.value.name
-              custom_rule_type = rules.value.custom_rule_type
-              metadata         = rules.value.metadata
+        dynamic "rules" {
+          for_each = try(scale.value.rules, [])
+          content {
+            name             = rules.value.name
+            custom_rule_type = rules.value.custom_rule_type
+            metadata         = rules.value.metadata
 
-              dynamic "authentication" {
-                for_each = try(rules.value.authentication, [])
-                content {
-                  secret_name       = authentication.value.secret_name
-                  trigger_parameter = authentication.value.trigger_parameter
-                }
+            dynamic "authentication" {
+              for_each = try(rules.value.authentication, [])
+              content {
+                secret_name       = authentication.value.secret_name
+                trigger_parameter = authentication.value.trigger_parameter
               }
             }
           }
