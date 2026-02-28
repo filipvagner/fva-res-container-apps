@@ -160,19 +160,19 @@ variable "container_app_job" {
       }), {})
     }), null)
     template = object({
-      container = object({
-        name    = string
-        cpu     = number
-        memory  = string
-        image   = string
-        args    = optional(list(string))
-        command = optional(list(string))
-        env = optional(map(object({
-          name        = string
-          value       = optional(string)
-          secret_name = optional(string)
-        })), {})
-      })
+      container = map(object({
+      name    = string
+      cpu     = number
+      memory  = string
+      image   = string
+      args    = optional(list(string))
+      command = optional(list(string))
+      env = optional(map(object({
+        name        = string
+        value       = optional(string)
+        secret_name = optional(string)
+      })), {})
+      }))
     })
   }))
 }
