@@ -190,5 +190,9 @@ resource "azurerm_container_app_job" "this" {
       }
     }
   }
+
+  lifecycle {
+    ignore_changes = [ workload_profile_name ]
+  }
 }
 #endregion Container App Jobs
