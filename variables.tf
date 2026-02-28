@@ -153,8 +153,8 @@ variable "container_app_job" {
         custom_rule_type = string
         metadata         = map(string)
         authentication = optional(object({
-        secret_name       = string
-        trigger_parameter = string
+          secret_name       = string
+          trigger_parameter = string
         }), null)
       }), null)
       }), null)
