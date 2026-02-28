@@ -148,16 +148,16 @@ variable "container_app_job" {
         min_executions              = optional(number, 0)
         max_executions              = optional(number, 10)
         polling_interval_in_seconds = optional(number, 30)
-        rules = optional(map(object({
+        rules = optional(object({
           name             = string
           custom_rule_type = string
           metadata         = map(string)
-          authentication = optional(map(object({
+          authentication = optional(object({
             secret_name       = string
             trigger_parameter = string
-          })), {})
-        })), {})
-      }), {})
+          }), null)
+        }), null)
+      }), null)
     }), null)
     template = object({
       container = object({
