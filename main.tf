@@ -184,23 +184,20 @@ resource "azurerm_container_app_job" "this" {
   }
 
   template {
-    dynamic "container" {
-      for_each = each.value.template.container
-      content {
-        image   = container.value.image
-        name    = container.value.name
-        cpu     = container.value.cpu
-        memory  = container.value.memory
-        command = try(container.value.command, null)
-        args    = try(container.value.args, null)
+    container {
+      image   = container.image
+      name    = container.name
+      cpu     = container.cpu
+      memory  = container.memory
+      command = try(container.command, null)
+      args    = try(container.args, null)
 
-        dynamic "env" {
-          for_each = try(container.value.env, {})
-          content {
-            name        = env.value.name
-            secret_name = try(env.value.secret_name, null)
-            value       = try(env.value.value, null)
-          }
+      dynamic "env" {
+        for_each = try(container.env, {})
+        content {
+          name        = env.value.name
+          secret_name = try(env.value.secret_name, null)
+          value       = try(env.value.value, null)
         }
       }
     }
