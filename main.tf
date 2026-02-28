@@ -108,3 +108,91 @@ resource "azurerm_container_app" "this" {
   }
 }
 #endregion Container Apps
+
+#region Container App Jobs
+resource "azurerm_container_app_job" "this" {
+  for_each = var.container_app_job
+
+  container_app_environment_id = azurerm_container_app_environment.this.id
+  name                         = each.value.name
+  location                     = var.location
+  resource_group_name          = var.resource_group_name
+  replica_timeout_in_seconds   = each.value.replica_timeout_in_seconds
+  replica_retry_limit          = each.value.replica_retry_limit
+  tags                         = var.tags
+
+  dynamic "registry" {
+    for_each = try(each.value.registry, null) != null ? [each.value.registry] : []
+    content {
+      identity             = try(registry.value.identity, null)
+      username             = try(registry.value.username, null)
+      password_secret_name = try(registry.value.password_secret_name, null)
+      server               = try(registry.value.server, null)
+    }
+  }
+
+  dynamic "identity" {
+    for_each = try(each.value.identity, null) != null ? [each.value.identity] : []
+    content {
+      type         = identity.value.type
+      identity_ids = try(identity.value.identity_ids, null)
+    }
+  }
+
+  dynamic "secret" {
+    for_each = try(each.value.secret, null) != null ? each.value.secret : {}
+    content {
+      name                = secret.value.name
+      identity            = try(secret.value.identity, null)
+      key_vault_secret_id = try(secret.value.key_vault_secret_id, null)
+      value               = try(secret.value.value, null)
+    }
+  }
+
+  event_trigger_config {
+    parallelism              = each.value.event_trigger_config.parallelism
+    replica_completion_count = each.value.event_trigger_config.replica_completion_count
+    scale {
+      min_executions              = each.value.event_trigger_config.scale.min_executions
+      max_executions              = each.value.event_trigger_config.scale.max_executions
+      polling_interval_in_seconds = each.value.event_trigger_config.scale.polling_interval_in_seconds
+      rules {
+        name             = each.value.event_trigger_config.scale.rules.name
+        custom_rule_type = each.value.event_trigger_config.scale.rules.custom_rule_type
+        metadata         = each.value.event_trigger_config.scale.rules.metadata
+        authentication {
+          secret_name       = each.value.event_trigger_config.scale.rules.authentication.secret_name
+          trigger_parameter = each.value.event_trigger_config.scale.rules.authentication.trigger_parameter
+        }
+      }
+    }
+  }
+
+  template {
+    dynamic "container" {
+      for_each = each.value.container
+      content {
+      image   = container.value.image
+      name    = container.value.name
+      cpu     = container.value.cpu
+      memory  = container.value.memory
+      command = try(container.value.command, null)
+      args    = try(container.value.args, null)
+
+      dynamic "env" {
+        for_each = try(container.value.env, {})
+        content {
+        name        = env.value.name
+        secret_name = try(env.value.secret_name, null)
+        value       = try(env.value.value, null)
+        }
+      }
+      }
+    }
+  }
+
+  lifecycle {
+    ignore_changes = [ workload_profile_name ]
+  }
+}
+#endregion Container App Jobs
