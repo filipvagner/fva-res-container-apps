@@ -118,3 +118,61 @@ variable "container_app" {
   }))
   default = {}
 }
+
+variable "container_app_job" {
+  description = "List of container app jobs configurations."
+  type = map(object({
+    name = string
+    replica_timeout_in_seconds = optional(number, 600)
+    replica_retry_limit = optional(number, 0)
+    registry = optional(object({
+      identity             = optional(string)
+      username             = optional(string)
+      password_secret_name = optional(string)
+      server               = string
+    }), null)
+    identity = optional(object({
+      type = string
+      identity_ids = optional(list(string))
+    }), null)
+    secret = optional(map(object({
+      name                = string
+      identity            = optional(string)
+      key_vault_secret_id = optional(string)
+      value               = optional(string)
+    })), {})
+    event_trigger_config = optional(object({
+      parallelism              = optional(number, 1)
+      replica_completion_count = optional(number, 1)
+      scale = optional(object({
+      min_executions              = optional(number, 0)
+      max_executions              = optional(number, 10)
+      polling_interval_in_seconds = optional(number, 30)
+      rules = optional(map(object({
+        name             = string
+        custom_rule_type = string
+        metadata         = map(string)
+        authentication = optional(map(object({
+        secret_name       = string
+        trigger_parameter = string
+        })), {})
+      })), {})
+      }), {})
+    }), null)
+    template = object({
+      container = object({
+        name    = string
+        cpu     = number
+        memory  = string
+        image   = string
+        args    = optional(list(string))
+        command = optional(list(string))
+        env = optional(map(object({
+          name        = string
+          value       = optional(string)
+          secret_name = optional(string)
+        })), {})
+      })
+    })
+  }))
+}
